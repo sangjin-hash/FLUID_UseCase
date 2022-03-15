@@ -47,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
                     index--;
                     Glide.with(MainActivity.this).load(sampleArr[index]).into(sample);
                 }else{
-                    index = 10;
+                    index = 9;
+                    Glide.with(MainActivity.this).load(sampleArr[index]).into(sample);
                 }
             }
         });
@@ -55,11 +56,12 @@ public class MainActivity extends AppCompatActivity {
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(index != 10){
+                if(index != 9){
                     index++;
                     Glide.with(MainActivity.this).load(sampleArr[index]).into(sample);
                 }else{
                     index = 0;
+                    Glide.with(MainActivity.this).load(sampleArr[index]).into(sample);
                 }
             }
         });
