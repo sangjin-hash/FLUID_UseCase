@@ -2,21 +2,18 @@ package com.hmsl.fluidtargetapp;
 
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.hmsl.fluidtargetapp.model.Sample;
-import com.hmsl.fluidtargetapp.network.ApiClient;
-import com.hmsl.fluidtargetapp.network.ApiInterface;
-import java.util.List;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
+import java.io.IOException;
+import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,8 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "TEST";
 
-    private String[] sampleArr = new String[10];
-    private int index = 0;
+    private static Bitmap[] sampleArr = new Bitmap[10];
+    private static int index = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,17 +35,36 @@ public class MainActivity extends AppCompatActivity {
         btn_prev = (Button)findViewById(R.id.btn_prev);
         btn_next = (Button)findViewById(R.id.btn_next);
 
-        init_url();
+        AssetManager am = getResources().getAssets();
+        InputStream is = null;
+        try{
+            is = am.open("0.jpg");
+            Bitmap bm = BitmapFactory.decodeStream(is);
+            init_bitmap();
+            sample.setImageBitmap(bm);
+            is.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        sample.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+
+                return true;
+            }
+        });
+
 
         btn_prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(index != 0){
                     index--;
-                    Glide.with(MainActivity.this).load(sampleArr[index]).into(sample);
+                    sample.setImageBitmap(sampleArr[index]);
                 }else{
                     index = 9;
-                    Glide.with(MainActivity.this).load(sampleArr[index]).into(sample);
+                    sample.setImageBitmap(sampleArr[index]);
                 }
             }
         });
@@ -58,35 +74,27 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(index != 9){
                     index++;
-                    Glide.with(MainActivity.this).load(sampleArr[index]).into(sample);
+                    sample.setImageBitmap(sampleArr[index]);
                 }else{
                     index = 0;
-                    Glide.with(MainActivity.this).load(sampleArr[index]).into(sample);
+                    sample.setImageBitmap(sampleArr[index]);
                 }
             }
         });
     }
 
-    public void init_url(){
-        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<List<Sample>> call = apiInterface.getSample();
-        call.enqueue(new Callback<List<Sample>>() {
-            @Override
-            public void onResponse(Call<List<Sample>> call, Response<List<Sample>> response) {
-                if(response.isSuccessful() && response.body() != null){
-                    for(int i = 0; i<response.body().size(); i++){
-                        sampleArr[i] = response.body().get(i).getUrl();
-                    }
-                    Glide.with(MainActivity.this).load(sampleArr[0]).into(sample);
-                }
+    private void init_bitmap() {
+        AssetManager am = getResources().getAssets();
+        InputStream is = null;
+        try{
+            for(int i = 0; i < 10; i++){
+                is = am.open(""+i+".jpg");
+                Bitmap bm = BitmapFactory.decodeStream(is);
+                sampleArr[i] = bm;
             }
-
-            @Override
-            public void onFailure(Call<List<Sample>> call, Throwable t) {
-                Log.e(TAG, t.getMessage());
-            }
-        });
+            is.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
-
 }
