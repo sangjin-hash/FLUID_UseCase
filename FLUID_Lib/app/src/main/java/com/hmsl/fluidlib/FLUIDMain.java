@@ -2,6 +2,7 @@ package com.hmsl.fluidlib;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -13,7 +14,7 @@ import java.io.IOException;
 public class FLUIDMain {
     private static final String TAG = "FLUID(FLUIDMain)";
     public static com.hmsl.fluidmanager.IFLUIDService mRemoteService = null;
-    private static final int MAX_BUFFER = 1024;
+    static Bitmap[] bitmapArr;
 
     public ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -29,12 +30,9 @@ public class FLUIDMain {
         }
     };
 
-    // todo : FLUID_TargetApp 에서 이미지 url이 저장된 String 배열과, Target_App에서 rendering 중인 이미지가 몇번째인지 알아야 한다.
-    public static void runtest(String[] sampleArr, Object index)
+    public static void runtest(Bitmap[] sampleArr, Object index)
     {
-        Log.d(TAG, "sampleArr 주소값 : " + sampleArr);
-        Log.d(TAG, "Index : " + (int)index);
-
+        bitmapArr = sampleArr;
         Bundle bundle = new Bundle();
 
         try {
@@ -45,21 +43,15 @@ public class FLUIDMain {
         }
     }
 
-    // byte[] 에 들어가야 할 것 -> flag(boolean) / string[] / index
-    public static byte[] generate_byteArray(String[] sampleArr, int index) throws IOException{
+    public static byte[] generate_byteArray(Bitmap[] sampleArr, int index) throws IOException{
         byte[] dtoByteArray=null;
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
         dataOutputStream.writeBoolean(false);  // update x
 
-        // String[] 은 지원 x
-        for(int i = 0; i< sampleArr.length; i++){
-            dataOutputStream.writeUTF(sampleArr[i]);
-            Log.d(TAG, "sampleArr["+i+"] : "+sampleArr[i]);
-        }
+        sampleArr[index].compress(Bitmap.CompressFormat.JPEG,50,dataOutputStream);
+        Log.d(TAG, "Distribute sampleArr["+index+"] : "+sampleArr[index]);
 
-        // TargetApp의 이미지에 해당하는 index
-        dataOutputStream.writeInt(index);
         dataOutputStream.flush();
         dtoByteArray = byteArrayOutputStream.toByteArray();
         return dtoByteArray;
@@ -80,7 +72,11 @@ public class FLUIDMain {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
         dataOutputStream.writeBoolean(true);  // update o
-        dataOutputStream.writeInt(index);
+
+        // Update가 발생하면, TargetApp에서 받은 index를 통해 해당 이미지의 Bitmap을 stream에 넣어준다.
+        bitmapArr[index].compress(Bitmap.CompressFormat.JPEG,50,dataOutputStream);
+        Log.d(TAG, "Update sampleArr["+index+"] : "+bitmapArr[index]);
+
         dataOutputStream.flush();
         dtoByteArray = byteArrayOutputStream.toByteArray();
         return dtoByteArray;
