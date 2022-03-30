@@ -2,8 +2,6 @@ package com.hmsl.fluidguest;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -12,26 +10,19 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "[SOCKET] Guest";
 
     private int port = 5673;
-    private String ip = "192.168.0.22";
+    private String ip = "192.168.0.28";
 
     private Handler mHandler = new Handler();
     private Handler workerHandler;
@@ -59,24 +50,72 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                Log.d("TAG", "before make socket");
                 socket = new Socket(ip, port);
+                Log.d(TAG, "Connected");
+
+                while (true) {
+                    InputStream is = socket.getInputStream();
+                    BufferedInputStream bis = new BufferedInputStream(is);
+
+                    byte[] imageBuffer = null;
+                    byte[] flagBuffer = new byte[1];
+                    int size = 0;
+
+                    byte[] buffer = new byte[MAX_BUFFER];
+                    int read;
+                    while ((read = bis.read(buffer)) != -1) {
+                        if (imageBuffer == null) {
+                            /*
+                            FLUIDManager에서 Bitmap이 담긴 byte 배열의 길이를 별도의 4 바이트 배열을 만들어 가장 처음에
+                            보내기 때문에, 해당 크기만큼 가장 먼저 받아야 한다.
+                             */
+                            byte[] sizeBuffer = new byte[4];
+                            System.arraycopy(buffer, 0, sizeBuffer, 0, sizeBuffer.length);
+
+                            // 크기 다음으로 isUpdate flag 값을 받으므로 1바이트만 읽어온다.
+                            System.arraycopy(buffer, sizeBuffer.length, flagBuffer, 0, flagBuffer.length);
+
+                            size = getInt(sizeBuffer);
+
+                            // 위에서 읽은 5바이트 만큼 빼준다. 그 뒤로 Bitmap이 담긴 byte 배열을 받는다.
+                            read -= (sizeBuffer.length + 1);
+
+                            imageBuffer = new byte[read];
+                            System.arraycopy(buffer, sizeBuffer.length + 1, imageBuffer, 0, read);
+                        } else {
+                            byte[] preImageBuffer = imageBuffer.clone();
+                            imageBuffer = new byte[read + preImageBuffer.length];
+                            System.arraycopy(preImageBuffer, 0, imageBuffer, 0, preImageBuffer.length);
+                            System.arraycopy(buffer, 0, imageBuffer, imageBuffer.length - read, read);
+                        }
+
+                        // 읽고자 하는 Bitmap byte 배열 크기만큼 모두 읽은 이후 처리
+                        if (imageBuffer.length >= size) {
+                            Bundle bundle = new Bundle();
+                            bundle.putByteArray("Data", imageBuffer);
+
+                            Message msg = workerHandler.obtainMessage();
+                            msg.setData(bundle);
+                            msg.what = flagBuffer[0];
+
+                            workerHandler.sendMessage(msg);
+                            imageBuffer = null;
+                            size = 0;
+                        }
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            while (socket != null) {
-                try {
-                    InputStream is = socket.getInputStream();
-                    byte[] input = new byte[MAX_BUFFER];
-                    if (is.read(input) != 0) {
-                        Message msg = Message.obtain();
-                        msg.obj = input;
-                        workerHandler.sendMessage(msg);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+        }
+
+        private int getInt(byte[] sizeBuffer) {
+            int s1 = sizeBuffer[0] & 0xFF;
+            int s2 = sizeBuffer[1] & 0xFF;
+            int s3 = sizeBuffer[2] & 0xFF;
+            int s4 = sizeBuffer[3] & 0xFF;
+
+            return ((s1 << 24) + (s2 << 16) + (s3 << 8) + (s4 << 0));
         }
     }
 
@@ -88,16 +127,14 @@ public class MainActivity extends AppCompatActivity {
             workerHandler = new Handler(Looper.myLooper()) {
                 @Override
                 public void handleMessage(@NonNull Message msg) {
-                    byte[] input = (byte[]) msg.obj;
-                    ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(input);
-                    DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+                    byte[] data = msg.getData().getByteArray("Data");
+                    int flag = msg.what;
+                    boolean isUpdate = (flag == 1) ? true : false;
+
                     try {
-                        boolean isUpdate = dataInputStream.readBoolean();
-                        Log.d(TAG, "" + isUpdate);
-                        Bitmap bm = BitmapFactory.decodeByteArray(input, 1, input.length - 1);
+                        Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
                         if (!isUpdate) {
                             Log.d(TAG, "distribute mode");
-                            Log.e(TAG, "Bitmap = " + bm);
                             mHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -113,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             });
                         }
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
