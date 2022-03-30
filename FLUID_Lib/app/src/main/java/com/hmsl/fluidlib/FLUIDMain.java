@@ -47,7 +47,6 @@ public class FLUIDMain {
         byte[] dtoByteArray=null;
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-        dataOutputStream.writeBoolean(false);  // update x
 
         sampleArr[index].compress(Bitmap.CompressFormat.JPEG,50,dataOutputStream);
         Log.d(TAG, "Distribute sampleArr["+index+"] : "+sampleArr[index]);
@@ -71,7 +70,6 @@ public class FLUIDMain {
         byte[] dtoByteArray=null;
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-        dataOutputStream.writeBoolean(true);  // update o
 
         // Update가 발생하면, TargetApp에서 받은 index를 통해 해당 이미지의 Bitmap을 stream에 넣어준다.
         bitmapArr[index].compress(Bitmap.CompressFormat.JPEG,50,dataOutputStream);
