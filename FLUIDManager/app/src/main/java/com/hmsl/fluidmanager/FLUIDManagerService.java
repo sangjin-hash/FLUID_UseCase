@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
@@ -29,13 +30,12 @@ public class FLUIDManagerService extends Service {
         public void test(Bundle bundle) {
             bundle.setClassLoader(getClass().getClassLoader());
             byte[] recvBuffer = bundle.getByteArray("key");
-            Log.d("TAG", "Distribute byte[] : " + recvBuffer);
 
             if(!isDistribute){
                 Message msg = Message.obtain();
                 msg.obj = recvBuffer;
                 distributeHandler.sendMessage(msg);
-                Log.e(TAG, "Message 전송");
+                Log.d(TAG, "Distribute Message Send");
             }
         }
 
@@ -43,12 +43,11 @@ public class FLUIDManagerService extends Service {
         public void update(Bundle bundle) {
             bundle.setClassLoader(getClass().getClassLoader());
             byte[] recvBuffer = bundle.getByteArray("key");
-            Log.d("TAG", "Update byte[] : " + recvBuffer);
 
             Message msg = Message.obtain();
             msg.obj = recvBuffer;
             updateHandler.sendMessage(msg);
-            Log.e(TAG, "Message 전송");
+            Log.d(TAG, "Update Message Send");
         }
     };
 
@@ -105,14 +104,26 @@ public class FLUIDManagerService extends Service {
             distributeHandler = new Handler(Looper.myLooper()) {
                 @Override
                 public void handleMessage(@NonNull Message msg) {
-                    byte[] input = (byte[]) msg.obj;
-                    Log.e(TAG, "Distribute Message 받음 " + input);
+                    Log.e(TAG, "Distribute Message Receive");
+
+                    // isDistribute => Guest에 최초 Distribute가 되었는지 판단하는 flag
                     isDistribute = true;
-                    Log.e(TAG, "isDistribute : " + isDistribute);
 
                     try {
                         OutputStream os = socket.getOutputStream();
-                        os.write(input);
+                        DataOutputStream dataOutputStream = new DataOutputStream(os);
+                        byte[] data = (byte[]) msg.obj;
+                        byte[] size = getByte(data.length);
+
+                        dataOutputStream.write(size, 0, size.length);
+                        dataOutputStream.flush();
+
+                        dataOutputStream.writeBoolean(false);
+                        dataOutputStream.flush();
+
+                        dataOutputStream.write(data, 0, data.length);
+                        dataOutputStream.flush();
+
                         Log.e(TAG, "UI distribute socket msg 전송 성공");
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -124,13 +135,23 @@ public class FLUIDManagerService extends Service {
             updateHandler = new Handler(Looper.myLooper()) {
                 @Override
                 public void handleMessage(@NonNull Message msg) {
-                    byte[] input = (byte[]) msg.obj;
-                    Log.e(TAG, "Update Message 받음"+ input);
+                    Log.e(TAG, "Update Message Receive");
                     try {
                         if (isDistribute) {
                             OutputStream os = socket.getOutputStream();
-                            os.write(input);
-                            Log.d("TAG", "update socket message sent");
+                            DataOutputStream dataOutputStream = new DataOutputStream(os);
+                            byte[] data = (byte[]) msg.obj;
+                            byte[] size = getByte(data.length);
+
+                            dataOutputStream.write(size, 0, size.length);
+                            dataOutputStream.flush();
+
+                            dataOutputStream.writeBoolean(true);
+                            dataOutputStream.flush();
+
+                            dataOutputStream.write(data, 0, data.length);
+                            dataOutputStream.flush();
+                            Log.e(TAG, "UI update socket msg 전송 성공");
                         } else {
                             Log.d("TAG", "undistributed UI's update");
                         }
@@ -141,6 +162,16 @@ public class FLUIDManagerService extends Service {
             };
 
             Looper.loop();
+        }
+
+        private byte[] getByte(int num) {
+            byte[] buf = new byte[4];
+            buf[0] = (byte)((num >>> 24) & 0xFF);
+            buf[1] = (byte)((num >>> 16) & 0xFF);
+            buf[2] = (byte)((num >>> 8) & 0xFF);
+            buf[3] = (byte)((num >>> 0) & 0xFF);
+
+            return buf;
         }
     }
 }
