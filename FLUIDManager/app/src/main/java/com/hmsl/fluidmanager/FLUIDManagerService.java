@@ -28,6 +28,7 @@ public class FLUIDManagerService extends Service {
     private final IBinder mBinder = new IFLUIDService.Stub() {
         // distribute
         public void test(Bundle bundle) {
+            Log.i(TAG, "[TIME] RPC Distribute Method Received");
             bundle.setClassLoader(getClass().getClassLoader());
             byte[] recvBuffer = bundle.getByteArray("key");
 
@@ -41,6 +42,7 @@ public class FLUIDManagerService extends Service {
 
         // update
         public void update(Bundle bundle) {
+            Log.i(TAG, "[TIME] RPC Update Method Received");
             bundle.setClassLoader(getClass().getClassLoader());
             byte[] recvBuffer = bundle.getByteArray("key");
 
@@ -124,7 +126,7 @@ public class FLUIDManagerService extends Service {
                         dataOutputStream.write(data, 0, data.length);
                         dataOutputStream.flush();
 
-                        Log.e(TAG, "UI distribute socket msg 전송 성공");
+                        Log.i(TAG, "[TIME] Socket Send");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -151,7 +153,7 @@ public class FLUIDManagerService extends Service {
 
                             dataOutputStream.write(data, 0, data.length);
                             dataOutputStream.flush();
-                            Log.e(TAG, "UI update socket msg 전송 성공");
+                            Log.i(TAG, "[TIME] Socket Send");
                         } else {
                             Log.d("TAG", "undistributed UI's update");
                         }

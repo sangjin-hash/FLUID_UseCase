@@ -37,6 +37,7 @@ public class FLUIDMain {
 
         try {
             bundle.putByteArray("key",generate_byteArray(sampleArr, (int)index));
+            Log.i(TAG, "[TIME] RPC Call");
             mRemoteService.test(bundle);
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,6 +61,7 @@ public class FLUIDMain {
         Bundle bundle = new Bundle();
         try {
             bundle.putByteArray("key",generate_ubyteArray((int)index));
+            Log.i(TAG, "[TIME] RPC Call");
             mRemoteService.update(bundle);
         } catch (Exception e) {
             e.printStackTrace();

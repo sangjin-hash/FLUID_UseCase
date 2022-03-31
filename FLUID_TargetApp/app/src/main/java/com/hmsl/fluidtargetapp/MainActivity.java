@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         sample.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-
+                Log.i(TAG, "[TIME] Distribute Trigger");
                 return true;
             }
         });
@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         btn_prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.i(TAG, "[TIME] Update Trigger");
                 index_dec();
                 sample.setImageBitmap(sampleArr[index]);
                 return;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.i(TAG, "[TIME] Update Trigger");
                 index_inc();
                 sample.setImageBitmap(sampleArr[index]);
                 return;

@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // 읽고자 하는 Bitmap byte 배열 크기만큼 모두 읽은 이후 처리
                         if (imageBuffer.length >= size) {
+                            Log.i(TAG, "[TIME] Socket Received");
                             Bundle bundle = new Bundle();
                             bundle.putByteArray("Data", imageBuffer);
 
