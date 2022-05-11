@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "TEST";
 
-    static Bitmap[] sampleArr = new Bitmap[10];
+    static Bitmap[] sampleArr = new Bitmap[4];
     static int index = 0;
 
     @Override
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         sample.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                Log.i(TAG, "[TIME] Distribute Trigger");
+                Log.i(TAG, "[TIME] Distribute Trigger " + getTS());
                 return true;
             }
         });
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         btn_prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i(TAG, "[TIME] Update Trigger");
+                Log.i(TAG, "[TIME] Update Trigger " + getTS());
                 index_dec();
                 sample.setImageBitmap(sampleArr[index]);
                 return;
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i(TAG, "[TIME] Update Trigger");
+                Log.i(TAG, "[TIME] Update Trigger " + getTS());
                 index_inc();
                 sample.setImageBitmap(sampleArr[index]);
                 return;
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         AssetManager am = getResources().getAssets();
         InputStream is = null;
         try {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 4; i++) {
                 is = am.open("" + i + ".jpg");
                 Bitmap bm = BitmapFactory.decodeStream(is);
                 sampleArr[i] = bm;
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     static void index_inc() {
-        if (index != 9)
+        if (index != 3)
             index++;
         else
             index = 0;
@@ -101,6 +101,13 @@ public class MainActivity extends AppCompatActivity {
         if (index != 0)
             index--;
         else
-            index = 9;
+            index = 3;
+    }
+
+    public static String getTS()
+    {
+        Long tsLong = System.nanoTime();
+        String ts = tsLong.toString();
+        return ts;
     }
 }
