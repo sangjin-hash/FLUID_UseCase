@@ -4,8 +4,6 @@
 </br>
 
 ## Module_Description
-
-</br>
 </br>
 
 ### FLUID_Manager
@@ -68,3 +66,16 @@
 ## Evaluation
 <img src="https://user-images.githubusercontent.com/17938197/167874526-11ea72f5-cc31-47c5-88f3-eece5e14c01b.PNG" width="400" height="200"/> <img src="https://user-images.githubusercontent.com/17938197/167872506-9eac2ef4-1118-4190-b235-9b80c1c48240.png" width="200" height="200"/> <img src="https://user-images.githubusercontent.com/17938197/167874530-cf3d0352-f6ad-42fa-bbe4-551520f77955.PNG" width="400" height="200"/> 
 * UI 분산 소요 시간 (왼쪽) 과 UI 응답 시간 (오른쪽)
+</br>
+</br>
+</br>
+
+## Conclusion
+### 현황
+* Host to Guest 단방향 통신 완료
+* TextView 기반 UI, ImageView 분산 완료
+
+
+### 추후 방향
+* Host-Guest 양방향 통신 구현
+* Web UI 도입을 통한 Cross Platform 지원
