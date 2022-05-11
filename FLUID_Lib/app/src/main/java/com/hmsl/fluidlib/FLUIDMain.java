@@ -37,7 +37,7 @@ public class FLUIDMain {
 
         try {
             bundle.putByteArray("key",generate_byteArray(sampleArr, (int)index));
-            Log.i(TAG, "[TIME] RPC Call");
+            Log.i(TAG, "[TIME] RPC Call " + getTS());
             mRemoteService.test(bundle);
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,7 +61,7 @@ public class FLUIDMain {
         Bundle bundle = new Bundle();
         try {
             bundle.putByteArray("key",generate_ubyteArray((int)index));
-            Log.i(TAG, "[TIME] RPC Call");
+            Log.i(TAG, "[TIME] RPC Call" + getTS());
             mRemoteService.update(bundle);
         } catch (Exception e) {
             e.printStackTrace();
@@ -80,5 +80,12 @@ public class FLUIDMain {
         dataOutputStream.flush();
         dtoByteArray = byteArrayOutputStream.toByteArray();
         return dtoByteArray;
+    }
+
+    public static String getTS()
+    {
+        Long tsLong = System.nanoTime();
+        String ts = tsLong.toString();
+        return ts;
     }
 }
