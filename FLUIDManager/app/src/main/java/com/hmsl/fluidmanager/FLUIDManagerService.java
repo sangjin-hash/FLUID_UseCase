@@ -28,9 +28,10 @@ public class FLUIDManagerService extends Service {
     private final IBinder mBinder = new IFLUIDService.Stub() {
         // distribute
         public void test(Bundle bundle) {
-            Log.i(TAG, "[TIME] RPC Distribute Method Received");
+            Log.i(TAG, "[TIME] RPC Distribute Method Received " + getTS());
             bundle.setClassLoader(getClass().getClassLoader());
             byte[] recvBuffer = bundle.getByteArray("key");
+            Log.i(TAG, "Size = " + recvBuffer.length);
 
             if(!isDistribute){
                 Message msg = Message.obtain();
@@ -42,14 +43,22 @@ public class FLUIDManagerService extends Service {
 
         // update
         public void update(Bundle bundle) {
-            Log.i(TAG, "[TIME] RPC Update Method Received");
+            Log.i(TAG, "[TIME] RPC Update Method Received " + getTS());
             bundle.setClassLoader(getClass().getClassLoader());
             byte[] recvBuffer = bundle.getByteArray("key");
+            Log.i(TAG, "Size = " + recvBuffer.length);
 
             Message msg = Message.obtain();
             msg.obj = recvBuffer;
             updateHandler.sendMessage(msg);
             Log.d(TAG, "Update Message Send");
+        }
+
+        public String getTS()
+        {
+            Long tsLong = System.nanoTime();
+            String ts = tsLong.toString();
+            return ts;
         }
     };
 
@@ -126,7 +135,7 @@ public class FLUIDManagerService extends Service {
                         dataOutputStream.write(data, 0, data.length);
                         dataOutputStream.flush();
 
-                        Log.i(TAG, "[TIME] Socket Send");
+                        Log.i(TAG, "[TIME] Socket Send " + getTS());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -153,7 +162,7 @@ public class FLUIDManagerService extends Service {
 
                             dataOutputStream.write(data, 0, data.length);
                             dataOutputStream.flush();
-                            Log.i(TAG, "[TIME] Socket Send");
+                            Log.i(TAG, "[TIME] Socket Send " + getTS());
                         } else {
                             Log.d("TAG", "undistributed UI's update");
                         }
@@ -174,6 +183,13 @@ public class FLUIDManagerService extends Service {
             buf[3] = (byte)((num >>> 0) & 0xFF);
 
             return buf;
+        }
+
+        public String getTS()
+        {
+            Long tsLong = System.nanoTime();
+            String ts = tsLong.toString();
+            return ts;
         }
     }
 }
