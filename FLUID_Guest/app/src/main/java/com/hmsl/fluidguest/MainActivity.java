@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
                             FLUIDManager에서 Bitmap이 담긴 byte 배열의 길이를 별도의 4 바이트 배열을 만들어 가장 처음에
                             보내기 때문에, 해당 크기만큼 가장 먼저 받아야 한다.
                              */
+                            Log.i(TAG, "[TIME] Socket Init received " + getTS());
                             byte[] sizeBuffer = new byte[4];
                             System.arraycopy(buffer, 0, sizeBuffer, 0, sizeBuffer.length);
 
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // 읽고자 하는 Bitmap byte 배열 크기만큼 모두 읽은 이후 처리
                         if (imageBuffer.length >= size) {
-                            Log.i(TAG, "[TIME] Socket Received");
+                            Log.i(TAG, "[TIME] Socket Receiving Complete " + getTS());
                             Bundle bundle = new Bundle();
                             bundle.putByteArray("Data", imageBuffer);
 
@@ -172,5 +173,12 @@ public class MainActivity extends AppCompatActivity {
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         sample.setLayoutParams(lp);
         container.addView(sample);
+    }
+
+    public String getTS()
+    {
+        Long tsLong = System.nanoTime();
+        String ts = tsLong.toString();
+        return ts;
     }
 }
