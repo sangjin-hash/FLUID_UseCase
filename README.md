@@ -61,6 +61,10 @@
 </br>
 
 ## Module_Description
+### FLUID_TargetApp : 기존 앱
+* assets 디렉토리에서 jpg 파일들을 가져와 bitmap을 이용하여 ImageView를 Rendering 한다.
+
+</br>
 
 ### FLUID_Manager : aidl 지원을 위한 Android Service
 ##### - aidl method의 구현
