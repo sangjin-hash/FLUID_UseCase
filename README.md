@@ -8,6 +8,7 @@
   - [Demo](#Demo)
   - [Evaluation](#Evaluation)
   - [Conclusion](#Conclusion)
+  - [References](#References)
 </br>
 </br>
 
@@ -127,3 +128,16 @@
 ### 추후 방향
 * Host-Guest 양방향 통신 구현
 * Web UI 도입을 통한 Cross Platform 지원
+</br>
+</br>
+
+## References
+[1] Sangeun Oh et. al., “FLUID: Flexible User Interface Distribution for Ubiquitous Multi-device Interaction”, in ACM MobiCom, 2019
+
+[2] Sunjae Lee et. al., “FLUID-XP: flexible user interface distribution for cross-platform experience”, in ACM MobiCom, 2021
+
+[3] Van’t Hof et. al., “Flux: Multi-surface computing in android,”, in Usenix EuroSys, 2015
+
+[4] Sable Research Group, Soot - A Java optimization framework, https://github.com/Sable/soot.
+
+[5] Navid Salehnamadi, Instrumenting Android Apps With Soot, https://medium.com/swlh/instrumenting-android-apps-with-soot-dd6f146ff4d2
