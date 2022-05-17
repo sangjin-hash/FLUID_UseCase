@@ -122,23 +122,24 @@
 <img src="https://user-images.githubusercontent.com/17938197/167871370-87368ff7-57ba-454c-a9b3-b13aa7c4b703.png" width="400" height="300"/> <img src="https://user-images.githubusercontent.com/17938197/167872506-9eac2ef4-1118-4190-b235-9b80c1c48240.png" width="200" height="300"/> <img src="https://user-images.githubusercontent.com/17938197/167871485-77d6f0cc-0f39-45b7-b5d9-d6dd7ffd6571.png" width="400" height="300"/>
 
 * 이미지의 왼쪽은 Host Device, 오른쪽은 Guest Device 이다.
-* 왼쪽 이미지의 경우 모든 UI를 분산한 결과, 오른쪽 이미지는 이미지 UI만 분산한 결과이다.
+* 왼쪽 이미지의 경우 TextView 기반  UI를 분산한 결과, 오른쪽 이미지는 이미지 UI만 분산한 결과이다.
 </br>
 </br>
 
 ## Evaluation
 <img src="https://user-images.githubusercontent.com/17938197/167874526-11ea72f5-cc31-47c5-88f3-eece5e14c01b.PNG" width="400" height="200"/> <img src="https://user-images.githubusercontent.com/17938197/167872506-9eac2ef4-1118-4190-b235-9b80c1c48240.png" width="200" height="200"/> <img src="https://user-images.githubusercontent.com/17938197/167874530-cf3d0352-f6ad-42fa-bbe4-551520f77955.PNG" width="400" height="200"/> 
 * UI 응답 시간(왼쪽)과 분산 소요 시간 (오른쪽)
+* Host device의 내부 처리 시간이나 Guest device의 렌더링 시간이 네트워크 전송 시간에 비해 매우 적게 소요된다. 네트워크 오버헤드는 압축 기법을 사용해 줄일 수 있다.
 </br>
 </br>
 
 ## Conclusion
 ### 현황
-* Host to Guest 단방향 통신 완료
-* TextView 기반 UI, ImageView 분산 완료
+#### Host to Guest 단방향 통신 완료
+* 모바일 앱이 자신의 일부 UI 요소를 여러 기기로 분산시킬 수 있도록 앱 기능을 확장해 줌으로써, 사용자의 유연한 멀티 서피스 활용을 지원하는 프레임워크를 제안했다. 해당 프레임워크는 Google Pixel 5, 4a에서 구현했으며 싱글 서피스 앱을 멀티 서피스 앱으로 변환이 가능하다는 것을 보였다. 이 프레임워크는 운영체제에 대한 수정이 필요하지 않아 이기종 플랫폼으로의 UI 분산 또한 지원하도록 확장할 수 있다.
 
 ### 추후 방향
-* Host-Guest 양방향 통신 구현
+* Guest to Host UI Update 구현
 * Web UI 도입을 통한 Cross Platform 지원
 </br>
 </br>
