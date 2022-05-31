@@ -123,6 +123,10 @@
 
 * 이미지의 왼쪽은 Host Device, 오른쪽은 Guest Device 이다.
 * 왼쪽 이미지의 경우 TextView 기반  UI를 분산한 결과, 오른쪽 이미지는 이미지 UI만 분산한 결과이다.
+
+</br>
+Demo 영상 : https://youtu.be/fDhm-4cOSFM
+
 </br>
 </br>
 
